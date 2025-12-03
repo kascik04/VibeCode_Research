@@ -1,0 +1,129 @@
+
+# AI Coding Agent Task: Login Flow – UmiJS + NestJS (VibeCoding Training)
+
+**Date:** 2025-12-03  
+**Version:** 1.1  
+
+---
+
+## 1. Purpose
+
+**Goal:** Xây dựng hệ thống đăng nhập hoàn chỉnh cho dự án training VibeCoding. Mục tiêu là tạo ra một luồng đăng nhập đầy đủ, bảo mật, phản hồi tốt UX, triển khai frontend bằng **UmiJS (React)** và backend bằng **NestJS**, tuân theo sơ đồ sequence đã thiết kế.
+
+---
+
+## 2. Features
+
+**Authentication Flow – Frontend (UmiJS):**
+
+- [ ] **Form Login UI:**
+  - [ ] Trường nhập email/username, có validation định dạng.
+  - [ ] Trường nhập mật khẩu, có toggle ẩn/hiện.
+  - [ ] Nút “Đăng nhập” bị disable cho đến khi hợp lệ.
+  - [ ] Loading khi đang gửi request.
+- [ ] **Chức năng bổ sung:**
+  - [ ] Ghi nhớ đăng nhập ("Remember Me") – lưu token lâu hơn.
+  - [ ] Cảnh báo Caps Lock (UX).
+  - [ ] Liên kết “Quên mật khẩu?”
+  - [ ] Tự động focus vào email khi mở form.
+- [ ] **Thông báo lỗi rõ ràng:**
+  - [ ] Lỗi dưới trường (ví dụ: định dạng sai).
+  - [ ] Lỗi toàn cục: “Tên đăng nhập hoặc mật khẩu không đúng”.
+  - [ ] Xoá trường mật khẩu khi thất bại.
+
+**Authentication Flow – Backend (NestJS):**
+
+- [ ] **Endpoint POST /auth/login**
+  - [ ] Validate đầu vào (DTO class).
+  - [ ] Tìm user theo email/username.
+  - [ ] Kiểm tra trạng thái tài khoản (active, locked...).
+  - [ ] So sánh mật khẩu (bcrypt.compare).
+  - [ ] Trả về JWT access token và refresh token (nếu dùng JWT).
+  - [ ] Hoặc thiết lập session-cookie (nếu dùng session).
+- [ ] **Xử lý lỗi:**
+  - [ ] Trả 401 khi sai thông tin.
+  - [ ] Trả 403 nếu tài khoản bị khoá.
+  - [ ] Rate limit hoặc ghi log khi đăng nhập sai nhiều lần.
+- [ ] **Tạo refresh token (tuỳ chọn):**
+  - [ ] Hash lưu DB.
+  - [ ] Lưu thông tin thiết bị.
+  - [ ] Gửi dưới dạng HttpOnly cookie.
+
+---
+
+## 3. Key Files
+
+**Frontend (UmiJS):**
+
+- `src/pages/login/index.tsx` – trang đăng nhập chính.
+- `src/components/LoginForm.tsx` – form giao diện nhập.
+- `src/services/auth.ts` – hàm login FE.
+- `src/models/auth.ts` – quản lý trạng thái auth (UmiJS model).
+- `src/wrappers/auth.tsx` – bảo vệ route khi chưa login.
+- `src/utils/request.ts` – axios instance, set header auth/token.
+- `src/locales/vi-VN/login.json` – string đa ngôn ngữ.
+
+**Backend (NestJS):**
+
+- `src/auth/auth.controller.ts` – chứa POST /auth/login.
+- `src/auth/auth.service.ts` – logic xử lý xác thực.
+- `src/users/users.service.ts` – tìm user theo email/username.
+- `src/users/entities/user.entity.ts` – định nghĩa user (có passwordHash, status).
+- `src/auth/strategies/local.strategy.ts` – Passport local strategy.
+- `src/auth/guards/local-auth.guard.ts` – guard cho login route.
+- `src/auth/jwt/jwt.strategy.ts` – (tuỳ chọn) xác thực token cho các route khác.
+
+---
+
+## 4. Business Flow
+
+Business Flow Image: VibeCoding_Login/VibeCoding-Login.jpg
+
+**1. Người dùng truy cập trang /login**
+- Nếu đã login (có token/session) → redirect đến dashboard.
+- Nếu chưa login → hiển thị form.
+
+**2. Người dùng nhập email + password**
+- FE kiểm tra định dạng.
+- Nếu hợp lệ → nút login được enable.
+
+**3. Người dùng nhấn “Đăng nhập”**
+- Gửi POST `/auth/login` (body JSON `{identifier, password}`).
+- FE bật loading, disable form.
+
+**4. NestJS xử lý request:**
+- Tìm user theo email/username.
+- Nếu không tìm thấy → trả 401 + message.
+- Nếu tìm thấy → kiểm tra password bằng bcrypt.
+- Nếu sai → 401.
+- Nếu đúng:
+  - Trả accessToken (JWT) hoặc thiết lập session cookie.
+  - Trả thông tin user (id, email, name…).
+  - (Tuỳ chọn) refresh token lưu DB, set cookie.
+
+**5. FE nhận phản hồi:**
+- Nếu thành công → lưu trạng thái user, redirect về dashboard.
+- Nếu thất bại → hiện lỗi, xoá password field, cho phép nhập lại.
+
+---
+
+## 5. Aware (Prerequisites & Context)
+
+**FE UmiJS:**
+
+- Sử dụng `useModel()` để quản lý `authModel`.
+- Các request dùng axios instance `request.ts`, tự đính kèm token.
+- Sử dụng `t()` từ `umi/locale` để lấy string (không hardcode).
+- Sử dụng component thư viện như `Ant Design` nếu có.
+
+**BE NestJS:**
+
+- Sử dụng `PassportModule`, `bcrypt`, `jsonwebtoken`.
+- Session-based: `express-session`, `passport-local`, cookie-parser.
+- Token-based: `@nestjs/jwt`, `passport-jwt`.
+- Middleware đã enable `cookie-parser`, CORS với credentials.
+- Sử dụng DTO, Pipe để validate input login.
+- Mã hoá mật khẩu với `bcrypt.hash()`, so sánh bằng `bcrypt.compare()`.
+
+---
+

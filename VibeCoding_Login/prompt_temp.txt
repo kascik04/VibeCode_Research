@@ -1,0 +1,100 @@
+# AI Coding Agent Task: [Brief and descriptive title of the task]
+
+**Date:** YYYY-MM-DD
+**Version:** 1.0
+
+---
+
+## 1. Purpose
+
+**Goal:** Clearly and concisely describe the primary objective of this task. What is the high-level goal you want the agent to achieve?
+
+* **Example:** "The purpose of this task is to create a responsive login screen for a mobile application. This screen will handle user authentication and provide feedback in case of errors."
+
+---
+
+## 2. Features
+
+**Description:** Detail the specific features and functionalities required. Use a checklist for clarity.
+
+-   [ ] **User Input Fields:**
+    -   [ ] Email address input field with validation.
+    -   [ ] Password input field with a show/hide toggle.
+-   [ ] **Primary Action Button:**
+    -   [ ] A "Login" button that is disabled until both fields are valid.
+    -   [ ] The button should show a loading indicator when the authentication process is active.
+-   [ ] **Secondary Actions:**
+    -   [ ] A "Forgot Password?" link.
+    -   [ ] A "Sign up for a new account" link.
+-   [ ] **Error Handling:**
+    -   [ ] Display a clear error message below the relevant field if validation fails.
+    -   [ ] Show a general error message (e.g., "Invalid credentials") if the login API call fails.
+
+---
+
+## 3. Key Files
+
+**Description:** List all the relevant files the agent will need to interact with, create, or modify. This helps the agent to focus on the correct parts of the codebase.
+
+* **To Be Created:**
+    * `src/screens/LoginScreen.js`
+    * `src/components/auth/LoginForm.js`
+    * `src/styles/LoginScreenStyles.css`
+
+* **To Be Modified:**
+    * `src/navigation/AppNavigator.js` (to add the new screen)
+    * `src/services/AuthService.js` (to use the login function)
+
+* **To Be Referenced:**
+    * `src/theme/colors.js`
+    * `src/components/common/CustomButton.js`
+    * `src/assets/icons/logo.svg`
+
+---
+
+## 4. Business Flow
+
+**Description:** Describe the user interaction flow from start to finish. This helps the agent understand the sequence of events and the expected outcomes. Use a step-by-step format.
+
+1.  **User arrives on the Login Screen.**
+    * **System displays:** The UI with the email field, password field, "Login" button (initially disabled), "Forgot Password?" link, and "Sign Up" link.
+2.  **User enters a valid email and password.**
+    * **System response:** The "Login" button becomes enabled.
+3.  **User clicks the "Login" button.**
+    * **System action:**
+        * The button displays a loading spinner.
+        * The application calls the `login(email, password)` function from `AuthService.js`.
+    * **Success Outcome:**
+        * The user is redirected to the "Dashboard" screen.
+    * **Failure Outcome:**
+        * A general error message "Invalid email or password" is displayed.
+        * The loading spinner on the button is hidden.
+4.  **User clicks the "Forgot Password?" link.**
+    * **System action:** Navigate the user to the `ForgotPasswordScreen`.
+
+---
+
+## 5. Aware (Prerequisites & Context)
+
+**Description:** List the foundational and pre-existing modules, configurations, or conventions the agent must be aware of and utilize. This ensures consistency with the rest of your project.
+
+* **Fonts:**
+    * Please use the primary font defined in `src/theme/typography.js`. The main font is 'Inter'.
+
+* **Localization:**
+    * All user-facing strings (e.g., "Login", "Email", "Password") must be retrieved from our localization file: `src/localization/en.json`. Do not hardcode text.
+    * Use the `t()` translation function from our i18n utility.
+
+* **Error Handling:**
+    * All API call errors should be caught and processed through the global `ErrorHandler.js` service.
+
+* **Dependency Injection (DI):**
+    * Services like `AuthService` should be injected where needed, not instantiated directly. Follow the existing DI pattern in the project.
+
+* **State Management:**
+    * Use the existing state management solution (e.g., Redux, MobX, Context API) to manage the user's authentication state.
+
+* **Styling:**
+    * Adhere to the existing styling conventions. Use CSS Modules / Styled Components as found in other parts of the application.
+
+---
